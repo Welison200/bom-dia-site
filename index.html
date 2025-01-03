@@ -58,10 +58,43 @@
 
         #messageBox {
             margin: 20px 0;
-            padding: 15px;
+            padding: 20px;
             border-radius: 8px;
             background-color: #fff3cd;
             display: none;
+            font-size: 1.2em;
+            font-weight: bold;
+            animation: fadeInScale 0.5s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        footer {
+            margin-top: 20px;
+        }
+
+        #resetHeart {
+            background: none;
+            border: none;
+            padding: 0;
+            font-size: inherit;
+            cursor: pointer;
+            display: inline;
+            color: inherit;
+        }
+
+        #resetHeart:hover {
+            transform: scale(1.2);
         }
 
         @media (max-width: 480px) {
@@ -98,70 +131,68 @@
         <div id="messageBox"></div>
         
         <footer>
-            Desenvolvido com ❤️ por Welison
+            Desenvolvido com <button id="resetHeart" onclick="resetChoices()">❤️</button> por Welison
         </footer>
     </div>
 
     <script>
-        let lastKeyTime = 0;
-        let lastKey = '';
-        
-        // Adiciona detector de tecla para reset
-        document.addEventListener('keydown', function(e) {
-            const currentTime = new Date().getTime();
-            
-            if (e.key.toLowerCase() === 'r') {
-                if (lastKey === 'r' && currentTime - lastKeyTime < 500) {
-                    resetChoices();
-                    lastKey = '';
-                } else {
-                    lastKey = 'r';
-                    lastKeyTime = currentTime;
-                }
-            } else {
-                lastKey = '';
-            }
-        });
-
         function resetChoices() {
-            localStorage.removeItem('lastChoice');
-            document.getElementById('messageBox').style.display = 'none';
-            alert('Escolhas resetadas! Você pode escolher uma nova mensagem.');
-        }
+    localStorage.removeItem('chosenOptions');
+    document.getElementById('messageBox').style.display = 'none';
+    alert('Escolhas resetadas! Você pode escolher uma nova mensagem.');
+}
 
-        function showMessage(type) {
-            const lastChoice = localStorage.getItem('lastChoice');
-            const today = new Date().toDateString();
-            
-            if (lastChoice === today) {
-                document.getElementById('messageBox').innerHTML = 'Você já escolheu sua mensagem hoje! Volte amanhã para uma nova mensagem! 🌟';
-                document.getElementById('messageBox').style.display = 'block';
-                return;
-            }
+function showMessage(type) {
+    const today = new Date().toDateString();
+    let chosenOptions = JSON.parse(localStorage.getItem('chosenOptions') || '[]');
+    let lastMessageDate = localStorage.getItem('lastMessageDate');
+    
+    // Reset diário do contador de mensagens
+    if (lastMessageDate !== today) {
+        localStorage.setItem('lastMessageDate', today);
+        localStorage.removeItem('todayMessage');
+    }
+    
+    // Verifica se já escolheu mensagem hoje
+    let todayMessage = localStorage.getItem('todayMessage');
+    if (todayMessage) {
+        document.getElementById('messageBox').innerHTML = 'Você já escolheu sua mensagem hoje! Volte amanhã para uma nova mensagem! 🌟';
+        document.getElementById('messageBox').style.display = 'block';
+        return;
+    }
 
-            let message = '';
-            switch(type) {
-                case 'inspiracao':
-                    message = 'Acredite em você mesmo e tudo será possível! ✨';
-                    break;
-                case 'piada':
-                    message = 'Por que o pinheiro não se perde? Porque ele tem uma pinha (GPS)! 😄';
-                    break;
-                case 'reflexao':
-                    message = 'Às vezes, o caminho mais difícil é o que leva ao melhor destino. 🤔';
-                    break;
-                case 'desafio':
-                    message = 'Faça algo hoje que seu futuro eu agradecerá! 🎯';
-                    break;
-                case 'curiosidade':
-                    message = 'Sabia que as abelhas conseguem reconhecer rostos humanos? 🧐';
-                    break;
-            }
+    // Verifica se a opção já foi escolhida anteriormente
+    if (chosenOptions.includes(type)) {
+        document.getElementById('messageBox').innerHTML = 'Você já escolheu esta opção antes! Escolha outra opção! 🌟';
+        document.getElementById('messageBox').style.display = 'block';
+        return;
+    }
 
-            document.getElementById('messageBox').innerHTML = message;
-            document.getElementById('messageBox').style.display = 'block';
-            localStorage.setItem('lastChoice', today);
-        }
+    let message = '';
+    switch(type) {
+        case 'inspiracao':
+            message = 'Acredite em você mesmo e tudo será possível! ✨';
+            break;
+        case 'piada':
+            message = 'Por que o pinheiro não se perde? Porque ele tem uma pinha (GPS)! 😄';
+            break;
+        case 'reflexao':
+            message = 'Às vezes, o caminho mais difícil é o que leva ao melhor destino. 🤔';
+            break;
+        case 'desafio':
+            message = 'Faça algo hoje que seu futuro eu agradecerá! 🎯';
+            break;
+        case 'curiosidade':
+            message = 'Sabia que as abelhas conseguem reconhecer rostos humanos? 🧐';
+            break;
+    }
+
+    document.getElementById('messageBox').innerHTML = message;
+    document.getElementById('messageBox').style.display = 'block';
+    chosenOptions.push(type);
+    localStorage.setItem('chosenOptions', JSON.stringify(chosenOptions));
+    localStorage.setItem('todayMessage', 'true');
+}
     </script>
 </body>
 </html>
