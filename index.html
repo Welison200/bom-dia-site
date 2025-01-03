@@ -136,63 +136,59 @@
     </div>
 
     <script>
+        // Função para verificar e resetar a data
+        function checkAndResetDate() {
+            const lastChoice = localStorage.getItem('lastChoice');
+            const today = new Date().toDateString();
+    
+            if (lastChoice !== today) {
+                localStorage.removeItem('lastChoice');  // Remove a data armazenada
+            }
+        }
+    
+        // Chame essa função quando a página for carregada
+        checkAndResetDate();
+    
         function resetChoices() {
-    localStorage.removeItem('chosenOptions');
-    document.getElementById('messageBox').style.display = 'none';
-    alert('Escolhas resetadas! Você pode escolher uma nova mensagem.');
-}
-
-function showMessage(type) {
-    const today = new Date().toDateString();
-    let chosenOptions = JSON.parse(localStorage.getItem('chosenOptions') || '[]');
-    let lastMessageDate = localStorage.getItem('lastMessageDate');
+            localStorage.removeItem('lastChoice');
+            document.getElementById('messageBox').style.display = 'none';
+            alert('Escolhas resetadas! Você pode escolher uma nova mensagem.');
+        }
     
-    // Reset diário do contador de mensagens
-    if (lastMessageDate !== today) {
-        localStorage.setItem('lastMessageDate', today);
-        localStorage.removeItem('todayMessage');
-    }
+        function showMessage(type) {
+            const lastChoice = localStorage.getItem('lastChoice');
+            const today = new Date().toDateString();
+            
+            if (lastChoice === today) {
+                document.getElementById('messageBox').innerHTML = 'Você já escolheu sua mensagem hoje! Volte amanhã para uma nova mensagem! 🌟';
+                document.getElementById('messageBox').style.display = 'block';
+                return;
+            }
     
-    // Verifica se já escolheu mensagem hoje
-    let todayMessage = localStorage.getItem('todayMessage');
-    if (todayMessage) {
-        document.getElementById('messageBox').innerHTML = 'Você já escolheu sua mensagem hoje! Volte amanhã para uma nova mensagem! 🌟';
-        document.getElementById('messageBox').style.display = 'block';
-        return;
-    }
-
-    // Verifica se a opção já foi escolhida anteriormente
-    if (chosenOptions.includes(type)) {
-        document.getElementById('messageBox').innerHTML = 'Você já escolheu esta opção antes! Escolha outra opção! 🌟';
-        document.getElementById('messageBox').style.display = 'block';
-        return;
-    }
-
-    let message = '';
-    switch(type) {
-        case 'inspiracao':
-            message = 'Acredite em você mesmo e tudo será possível! ✨';
-            break;
-        case 'piada':
-            message = 'Por que o pinheiro não se perde? Porque ele tem uma pinha (GPS)! 😄';
-            break;
-        case 'reflexao':
-            message = 'Às vezes, o caminho mais difícil é o que leva ao melhor destino. 🤔';
-            break;
-        case 'desafio':
-            message = 'Faça algo hoje que seu futuro eu agradecerá! 🎯';
-            break;
-        case 'curiosidade':
-            message = 'Sabia que as abelhas conseguem reconhecer rostos humanos? 🧐';
-            break;
-    }
-
-    document.getElementById('messageBox').innerHTML = message;
-    document.getElementById('messageBox').style.display = 'block';
-    chosenOptions.push(type);
-    localStorage.setItem('chosenOptions', JSON.stringify(chosenOptions));
-    localStorage.setItem('todayMessage', 'true');
-}
+            let message = '';
+            switch(type) {
+                case 'inspiracao':
+                    message = 'Acredite em você mesmo e tudo será possível! ✨';
+                    break;
+                case 'piada':
+                    message = 'Por que o pinheiro não se perde? Porque ele tem uma pinha (GPS)! 😄';
+                    break;
+                case 'reflexao':
+                    message = 'Às vezes, o caminho mais difícil é o que leva ao melhor destino. 🤔';
+                    break;
+                case 'desafio':
+                    message = 'Faça algo hoje que seu futuro eu agradecerá! 🎯';
+                    break;
+                case 'curiosidade':
+                    message = 'Sabia que as abelhas conseguem reconhecer rostos humanos? 🧐';
+                    break;
+            }
+    
+            document.getElementById('messageBox').innerHTML = message;
+            document.getElementById('messageBox').style.display = 'block';
+            localStorage.setItem('lastChoice', today);
+        }
+    </script>
     </script>
 </body>
 </html>
