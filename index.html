@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bom Dia Interativo</title>
     <style>
+        /* Estilos permanecem exatamente os mesmos */
         body {
             font-family: Arial, sans-serif;
             max-width: 100%;
@@ -179,6 +180,46 @@
         #historicalMessages p[data-type="Curiosidade"] {
             border-left-color: #ff69b4;
         }
+
+        #btn-surpresa {
+            background: linear-gradient(45deg, #8b4513, #4a2209);
+            color: #ffd700;
+            font-weight: bold;
+            border: 2px solid #ffd700;
+        }
+
+        #btn-surpresa:not(:disabled) {
+            cursor: pointer;
+        }
+
+        .chocolate-voucher {
+            background: linear-gradient(45deg, #4a2209, #8b4513);
+            color: #ffd700;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #ffd700;
+            text-align: center;
+            margin: 20px auto;
+            font-family: 'Arial', cursive;
+        }
+
+        .chocolate-voucher h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .chocolate-voucher p {
+            font-size: 18px;
+            line-height: 1.6;
+            margin: 10px 0;
+        }
+
+        .chocolate-voucher .decoration {
+            font-size: 30px;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
@@ -193,6 +234,7 @@
             <button onclick="showMessage('reflexao')" id="btn-reflexao">Reflexão 🤔</button>
             <button onclick="showMessage('desafio')" id="btn-desafio">Desafio 🎯</button>
             <button onclick="showMessage('curiosidade')" id="btn-curiosidade">Curiosidade 🧐</button>
+            <button onclick="showMessage('surpresa')" id="btn-surpresa">Surpresa 🎁 - Só pode abrir quando abrir as outras 5</button>
         </div>
 
         <div id="messageHistory">
@@ -253,27 +295,49 @@
         }
 
         function showMessage(type) {
+            if (type === 'surpresa') {
+                const chosenMessages = JSON.parse(localStorage.getItem('messageHistory')) || [];
+                const regularOptions = ['Inspiração', 'Piada', 'Reflexão', 'Desafio', 'Curiosidade'];
+                const allRegularOpened = regularOptions.every(option => 
+                    chosenMessages.some(msg => msg.startsWith(option))
+                );
+                
+                if (!allRegularOpened) {
+                    alert('Você precisa abrir as outras 5 mensagens primeiro para liberar a surpresa! 🎁');
+                    return;
+                }
+            }
+
             const messages = {
-                'inspiracao': '"Não espere perder para dar valor. Valorize enquanto tem, valorize hoje. O mundo gira, o tempo passa, tudo muda." ✨',
-                'piada': 'Por que o pinheiro não se perde? Porque ele tem uma pinha (GPS)! 😄',
-                'reflexao': 'Às vezes, o caminho mais difícil é o que leva ao melhor destino. 🤔',
-                'desafio': 'Faça algo hoje que seu futuro eu agradecerá! 🎯',
-                'curiosidade': 'Sabia que as abelhas conseguem reconhecer rostos humanos? 🧐'
+                'inspiracao': '"Você é mais forte do que imagina, capaz de ir mais longe do que pensa e, acima de tudo, linda exatamente como você é. Acredite em si mesma!" <br><br> Que seu dia seja lindo como você! ✨❤️',
+                'piada': '- Eu saí do meu trabalho. Não conseguiria continuar lá depois do que o meu chefe disse...<br><br>- O que ele disse? <br><br>- Você está despedido! 😄😄😄',
+                'reflexao': '"Não espere perder para dar valor. Valorize enquanto tem, valorize hoje. O mundo gira, o tempo passa, tudo muda." <br><br> Tenha um ótimo dia! ✨',
+                'desafio': 'Listar 3 coisas incríveis sobre si mesma e 2 coisas coisas sobre seu melhor amigo <br>(Que vc sabe quem é!!! Espero). <br><br> Tem que mandar a lista para o seu melhor amigo, tá!?',
+                'curiosidade': 'Sabia que as vacas têm amigos e ficam estressadas quando estão separadas deles? 🐄💔<br><br> Estudos mostraram que as vacas formam amizades com outras vacas e ficam ansiosas e estressadas quando separadas de seus "melhores amigos"!<br><br>Você é minha vaca! Bom dia! 😄',
+                'surpresa': `<div class="chocolate-voucher">
+                    <div class="decoration">🍫 ✨ 🍫</div>
+                    <h2>Vale Chocolate</h2>
+                    <p>Este vale garante a você</p>
+                    <p><strong>1 Chocolate Especial</strong></p>
+                    <p>a ser resgatado com o Welison</p>
+                    <p><em>Porque você merece algo doce na vida!</em></p>
+                    <div class="decoration">🍫 ✨ 🍫</div>
+                </div>`
             };
 
             const messageHistory = JSON.parse(localStorage.getItem('messageHistory')) || [];
-            const optionText = getOptionText(type);
-            const message = messages[type];
+            if (type !== 'surpresa') {
+                const optionText = getOptionText(type);
+                messageHistory.push(`${optionText}: ${messages[type]}`);
+                localStorage.setItem('messageHistory', JSON.stringify(messageHistory));
+                localStorage.setItem('lastChoiceDate', new Date().toDateString());
+            }
 
-            messageHistory.push(`${optionText}: ${message}`);
-            localStorage.setItem('messageHistory', JSON.stringify(messageHistory));
-            localStorage.setItem('lastChoiceDate', new Date().toDateString());
+            document.getElementById('popupMessage').innerHTML = messages[type];
+            document.getElementById('popup').style.display = 'block';
 
             updateMessageHistory();
             updateButtonStates();
-
-            document.getElementById('popupMessage').innerHTML = message;
-            document.getElementById('popup').style.display = 'block';
         }
 
         function updateMessageHistory() {
