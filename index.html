@@ -56,27 +56,37 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-        #messageBox {
-            margin: 20px 0;
-            padding: 20px;
-            border-radius: 8px;
-            background-color: #fff3cd;
+        /* Estilos do pop-up */
+        #popup {
             display: none;
-            font-size: 1.2em;
-            font-weight: bold;
-            animation: fadeInScale 0.5s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            z-index: 1000;
+            max-width: 90%;
+            width: 400px;
+            animation: popupFadeIn 0.3s ease forwards; /* Animação de abertura */
         }
 
-        @keyframes fadeInScale {
-            from {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+        #popup h2 {
+            margin: 0;
+            padding-top: 20px; /* Espaçamento superior para o título */
+        }
+
+        #closePopup {
+            background: none;
+            border: none;
+            color: red;
+            font-size: 1.5em;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
         }
 
         footer {
@@ -95,6 +105,41 @@
 
         #resetHeart:hover {
             transform: scale(1.2);
+        }
+
+        @keyframes popupFadeIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .pulsing {
+            animation: pulse 1s infinite; /* Aplicando a animação de pulsação */
+        }
+
+        .popupMessage {
+            animation: pulse 1s infinite; /* Aplicando a animação de pulsação ao texto */
+            margin-top: 20px; /* Espaçamento superior para o texto */
         }
 
         @media (max-width: 480px) {
@@ -116,9 +161,9 @@
 </head>
 <body>
     <div class="container">
-        <h1>Bom Dia Interativo</h1>
-        <h2>Bom Dia! 🌞</h2>
-        <p>Escolha um número para receber uma mensagem especial:</p>
+        <h1>Bom Dia! 🌞</h1>
+        
+        <p>Escolha uma opção para receber uma mensagem especial:</p>
         
         <div class="options">
             <button onclick="showMessage('inspiracao')">Inspiração ✨</button>
@@ -128,7 +173,12 @@
             <button onclick="showMessage('curiosidade')">Curiosidade 🧐</button>
         </div>
 
-        <div id="messageBox"></div>
+        <!-- Pop-up -->
+        <div id="popup">
+            <button id="closePopup" onclick="closePopup()">✖</button>
+            <h2>✨✨✨</h2>
+            <div id="popupMessage" class="popupMessage"></div>
+        </div>
         
         <footer>
             Desenvolvido com <button id="resetHeart" onclick="resetChoices()">❤️</button> por Welison
@@ -145,13 +195,13 @@
                 localStorage.removeItem('lastChoice');  // Remove a data armazenada
             }
         }
-    
+
         // Chame essa função quando a página for carregada
         checkAndResetDate();
     
         function resetChoices() {
             localStorage.removeItem('lastChoice');
-            document.getElementById('messageBox').style.display = 'none';
+            closePopup(); // Fechar o pop-up ao resetar
             alert('Escolhas resetadas! Você pode escolher uma nova mensagem.');
         }
     
@@ -160,8 +210,8 @@
             const today = new Date().toDateString();
             
             if (lastChoice === today) {
-                document.getElementById('messageBox').innerHTML = 'Você já escolheu sua mensagem hoje! Volte amanhã para uma nova mensagem! 🌟';
-                document.getElementById('messageBox').style.display = 'block';
+                document.getElementById('popupMessage').innerHTML = 'Você já escolheu sua mensagem hoje! Volte amanhã para uma nova mensagem! 🌟';
+                document.getElementById('popup').style.display = 'block';
                 return;
             }
     
@@ -184,11 +234,16 @@
                     break;
             }
     
-            document.getElementById('messageBox').innerHTML = message;
-            document.getElementById('messageBox').style.display = 'block';
+            document.getElementById('popupMessage').innerHTML = message;
+            document.getElementById('popup').style.display = 'block';
+
+            // A classe de pulsação já está aplicada no texto
             localStorage.setItem('lastChoice', today);
         }
-    </script>
+
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
+        }
     </script>
 </body>
 </html>
