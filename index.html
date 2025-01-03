@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bom Dia Interativo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 100%;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            max-width: 90%;
+            width: 600px;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #ff6b6b;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 15px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 8px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        #messageBox {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #fff3cd;
+            display: none;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+                margin: 10px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            button {
+                padding: 12px;
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bom Dia Interativo</h1>
+        <h2>Bom Dia! 🌞</h2>
+        <p>Escolha um número para receber uma mensagem especial:</p>
+        
+        <div class="options">
+            <button onclick="showMessage('inspiracao')">Inspiração ✨</button>
+            <button onclick="showMessage('piada')">Piada 😄</button>
+            <button onclick="showMessage('reflexao')">Reflexão 🤔</button>
+            <button onclick="showMessage('desafio')">Desafio 🎯</button>
+            <button onclick="showMessage('curiosidade')">Curiosidade 🧐</button>
+        </div>
+
+        <div id="messageBox"></div>
+        
+        <footer>
+            Desenvolvido com ❤️ por Welison
+        </footer>
+    </div>
+
+    <script>
+        let lastKeyTime = 0;
+        let lastKey = '';
+        
+        // Adiciona detector de tecla para reset
+        document.addEventListener('keydown', function(e) {
+            const currentTime = new Date().getTime();
+            
+            if (e.key.toLowerCase() === 'r') {
+                if (lastKey === 'r' && currentTime - lastKeyTime < 500) {
+                    resetChoices();
+                    lastKey = '';
+                } else {
+                    lastKey = 'r';
+                    lastKeyTime = currentTime;
+                }
+            } else {
+                lastKey = '';
+            }
+        });
+
+        function resetChoices() {
+            localStorage.removeItem('lastChoice');
+            document.getElementById('messageBox').style.display = 'none';
+            alert('Escolhas resetadas! Você pode escolher uma nova mensagem.');
+        }
+
+        function showMessage(type) {
+            const lastChoice = localStorage.getItem('lastChoice');
+            const today = new Date().toDateString();
+            
+            if (lastChoice === today) {
+                document.getElementById('messageBox').innerHTML = 'Você já escolheu sua mensagem hoje! Volte amanhã para uma nova mensagem! 🌟';
+                document.getElementById('messageBox').style.display = 'block';
+                return;
+            }
+
+            let message = '';
+            switch(type) {
+                case 'inspiracao':
+                    message = 'Acredite em você mesmo e tudo será possível! ✨';
+                    break;
+                case 'piada':
+                    message = 'Por que o pinheiro não se perde? Porque ele tem uma pinha (GPS)! 😄';
+                    break;
+                case 'reflexao':
+                    message = 'Às vezes, o caminho mais difícil é o que leva ao melhor destino. 🤔';
+                    break;
+                case 'desafio':
+                    message = 'Faça algo hoje que seu futuro eu agradecerá! 🎯';
+                    break;
+                case 'curiosidade':
+                    message = 'Sabia que as abelhas conseguem reconhecer rostos humanos? 🧐';
+                    break;
+            }
+
+            document.getElementById('messageBox').innerHTML = message;
+            document.getElementById('messageBox').style.display = 'block';
+            localStorage.setItem('lastChoice', today);
+        }
+    </script>
+</body>
+</html>
