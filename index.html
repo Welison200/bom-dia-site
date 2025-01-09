@@ -276,9 +276,14 @@
     </div>
 
     <script>
-        function removerTarja(elemento) {
-        const tarja = elemento.querySelector('.tarja');
-        tarja.classList.add('oculta');
+         function removerTarja(elemento) {
+            const resposta = prompt('Quem é seu melhor amigo?');
+            if (resposta && resposta.toLowerCase() === 'welison') {
+                const tarja = elemento.querySelector('.tarja');
+                tarja.classList.add('oculta');
+            } else {
+                alert('Resposta incorreta! Tente novamente.');
+            }
         }
         function checkAndResetDate() {
             const lastChoiceDate = localStorage.getItem('lastChoiceDate');
